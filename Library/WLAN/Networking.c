@@ -68,6 +68,31 @@ void Net_RxData_UnReg(void){
 	Net_RxDat_cbTask = NULL; 
 }
 
+char * Net_Recv(int * id){ 
+	Net_RxData_Reg(); 
+	char * str; 
+	str = Net_RxData(id); 
+	Net_RxData_UnReg(); 
+	return str; 
+}
+
+void Net_Send(int id, const char * str){ 
+	Net_RxRply_Reg(); 
+	
+	Net_Print("AT+CIPSENDEX=", 13); 
+	Net_Putch(id + '0'); 
+	Net_Puts(",1024"); 
+	Net_RxRply(); 
+	Net_RxRply(); 
+	
+	Net_Puts(str); 
+	Net_Print("\\0", 2); 
+	Net_RxRply(); 
+	Net_RxRply(); 
+	
+	Net_RxRply_UnReg(); 
+}
+
 void Net_RxRply_cbFunc(char * str){ 
 	int code = 0, aux; 
 				if(String_Cmp(str, "WIFI", 4) == 0){ 
